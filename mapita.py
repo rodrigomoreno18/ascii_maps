@@ -25,7 +25,6 @@ def gen_map(width, height):
     if char == 3:
       surf += 1
 
-
     if surf > lowest:
       surf = lowest
       char = 1 if char == 3 else char
@@ -37,6 +36,14 @@ def gen_map(width, height):
 
     mat[surf][x] = char
 
+    if char == 1 and random.random() < 0.15:
+      i = 0
+      while i < random.randint(1, 4):
+        mat[surf - i][x] = 100    # Tronco de arbol
+        i += 1
+
+      mat[surf - i][x] = 101      # Copa de arbol
+      
     for y in range(surf + 1, height):
       mat[y][x] = random.choice((4,5,5,5,6))
 
@@ -56,7 +63,28 @@ def print_map(matrix, tiles, indexes=False):
     print('')
 
 if __name__ == '__main__':
-  mapita = gen_map(90, 20)
+
+  h, w = map(int, os.popen('stty size', 'r').read().split())
   
-  tiles = [' ', '_', '/', '\\', '@', '#', '%']
-  print_map(mapita, tiles, indexes=True)
+  tiles = {0:' ', 1:'_', 2:'/', 3:'\\',
+           4:'@', 5:'#', 6:'%', 100:'|',
+           101:'#'}
+
+  end = False
+
+  while not end:
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+    mapita = gen_map(w, h - 5)
+
+    print_map(mapita, tiles, indexes=False)
+
+    if input('\nType anything to quit, enter to repeat: '):
+      end = True
+  
+
+
+
+
+
+
