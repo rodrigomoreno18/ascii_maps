@@ -6,11 +6,11 @@ def clamp(num, low, hi):
   return max(low, min(num, hi))
 
 def gen_map(width, height):
-  lowest = height // 4
-  highest = lowest * 3
+  highest = height // 4
+  lowest = highest * 3
 
   # 'cursor' que va escribiendo la superficie
-  surf = random.randint(lowest, highest)
+  surf = random.randint(highest, lowest)
   
   # (y, x)
   mat = [[0 for _ in range(width)] for _ in range(height)]
@@ -18,38 +18,45 @@ def gen_map(width, height):
   # pdb.set_trace()
   
   for x in range(width):
-    char = random.choice((1, 2, 3)) # 1:_ 2:/ 3:\
+    char = random.choice((1, 1, 1, 2, 3)) # 1:_ 2:/ 3:\
 
+    # Si se va a escribir un '\'
+    # Bajar 1 nivel para que sea una bajada
     if char == 3:
-      if x and mat[surf - 1][x - 1] == 2:
-        surf -= 1
-      else:
-        surf -= 2   
+      surf += 1
+
+
+    if surf > lowest:
+      surf = lowest
+      char = 1 if char == 3 else char
+    elif surf < highest:
+      surf = highest
+      char = 1 if char == 2 else char
+    elif surf == highest and char == 2:
+      char = 1
 
     mat[surf][x] = char
 
+    for y in range(surf + 1, height):
+      mat[y][x] = random.choice((4,5,5,5,6))
+
     if char == 2:
-      surf += 1
-
-    if surf < lowest:
-      surf = lowest
-      char = 1
-    elif surf > highest:
-      surf = highest
-      char = 1
-
+      surf -= 1 
     
   return mat
 
 
-def print_map(matrix):
+def print_map(matrix, tiles, indexes=False):
   for y, row in enumerate(matrix):
+    if indexes:
+      print('y: ' + str(y).rjust(2, ' '), end=' | ')
     for x, col in enumerate(row):
-      print('_' if col == 1 else '/' if col == 2 else '\\' if col == 3 else ' ', end='')
+      print(tiles[col], end='')
 
     print('')
 
 if __name__ == '__main__':
   mapita = gen_map(90, 20)
-
-  print_map(mapita)
+  
+  tiles = [' ', '_', '/', '\\', '@', '#', '%']
+  print_map(mapita, tiles, indexes=True)
